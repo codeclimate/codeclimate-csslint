@@ -1,11 +1,11 @@
-FROM mhart/alpine-node
+FROM alpine:edge
 
 WORKDIR /usr/src/app
 COPY Gemfile /usr/src/app/
 COPY Gemfile.lock /usr/src/app/
 
-RUN npm install -g csslint && \
-    apk --update add ruby ruby-dev ruby-bundler less ruby-nokogiri build-base && \
+RUN apk --update add nodejs git ruby ruby-dev ruby-bundler less ruby-nokogiri build-base && \
+    npm install -g codeclimate/csslint.git#2a53712c61710840c023978418c7b48e3f32ac64 && \
     bundle install -j 4 && \
     apk del build-base && rm -fr /usr/share/ri
 
