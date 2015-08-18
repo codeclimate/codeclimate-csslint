@@ -55,7 +55,7 @@ module CC
       end
 
       def files
-        Dir.glob("**/*css")
+        Dir.glob("**/*.css")
       end
     end
   end
