@@ -19,5 +19,5 @@ deployment:
     commands:
       - gcloud auth activate-service-account --key-file /tmp/gcloud_key.json
       - gcloud docker -a
-      - docker push $registry_root/$image_name:b$CIRCLE_BUILD_NUM
+      - docker push $registry_root/$CIRCLE_PROJECT_REPONAME:b$CIRCLE_BUILD_NUM
 
