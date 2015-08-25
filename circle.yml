@@ -9,6 +9,7 @@ dependencies:
     - echo $gcloud_json_key_base64 | sed 's/ //g' | base64 -d > /tmp/gcloud_key.json
     - curl https://sdk.cloud.google.com | bash
     - bundle install
+    - npm install -g codeclimate/csslint.git#7a3a6be
 
 test:
   override:
