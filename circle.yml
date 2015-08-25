@@ -11,6 +11,7 @@ dependencies:
 
 test:
   override:
+    - bundle exec rspec spec
     - docker build -t=$registry_root/$CIRCLE_PROJECT_REPONAME:b$CIRCLE_BUILD_NUM .
 
 deployment:
