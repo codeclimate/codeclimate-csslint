@@ -68,8 +68,8 @@ module CC
       end
 
       def files_to_inspect
-        if includes = @engine_config["include_paths"]
-          build_files_with_inclusions(includes)
+        if @engine_config["include_paths"]
+          build_files_with_inclusions(@engine_config["include_paths"])
         else
           build_files_with_exclusions(@engine_config["exclude_paths"] || [])
         end
