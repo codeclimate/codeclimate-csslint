@@ -35,6 +35,44 @@ module CC
               output(/Don't use IDs in selectors./).to_stdout
           end
         end
+
+        describe "with include_paths" do
+          let(:engine_config) {
+            {"include_paths" => %w(included.css included_dir/)}
+          }
+
+          before do
+            create_source_file("included.css", id_selector_content)
+            create_source_file(
+              "included_dir/file.css", "p { color: blue !important; }"
+            )
+            create_source_file(
+              "included_dir/sub/sub/subdir/file.css", "img { }"
+            )
+            create_source_file("not_included.css", "a { outline: none; }")
+          end
+
+          it "includes all mentioned files" do
+            expect{ lint.run }.to \
+              output(/Don't use IDs in selectors./).to_stdout
+          end
+
+          it "expands directories" do
+            expect{ lint.run }.to output(/Use of !important/).to_stdout
+            expect{ lint.run }.to output(/Rule is empty/).to_stdout
+          end
+
+          it "excludes any unmentioned files" do
+            expect{ lint.run }.not_to \
+              output(/Outlines should only be modified using :focus/).to_stdout
+          end
+
+          it "shouldn't call a top-level Dir.glob ever" do
+            expect(Dir).not_to receive(:glob).with("**/*.css")
+            expect{ lint.run }.to \
+              output(/Don't use IDs in selectors./).to_stdout
+          end
+        end
       end
 
       def create_source_file(path, content)

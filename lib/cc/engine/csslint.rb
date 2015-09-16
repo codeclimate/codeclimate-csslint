@@ -48,14 +48,31 @@ module CC
         @results ||= Nokogiri::XML(csslint_xml)
       end
 
-      def csslint_xml
-        exclusions = @engine_config['exclude_paths'] || []
-        final_files = files.reject { |f| exclusions.include?(f) }
-        `csslint --format=checkstyle-xml #{final_files.join(" ")}`
+      def build_files_with_exclusions(exclusions)
+        files = Dir.glob("**/*.css")
+        files.reject { |f| exclusions.include?(f) }
       end
 
-      def files
-        Dir.glob("**/*.css")
+      def build_files_with_inclusions(inclusions)
+        inclusions.map do |include_path|
+          if include_path =~ %r{/$}
+            Dir.glob("#{include_path}/**/*.css")
+          else
+            include_path
+          end
+        end.flatten
+      end
+
+      def csslint_xml
+        `csslint --format=checkstyle-xml #{files_to_inspect.join(" ")}`
+      end
+
+      def files_to_inspect
+        if includes = @engine_config["include_paths"]
+          build_files_with_inclusions(includes)
+        else
+          build_files_with_exclusions(@engine_config["exclude_paths"] || [])
+        end
       end
     end
   end
