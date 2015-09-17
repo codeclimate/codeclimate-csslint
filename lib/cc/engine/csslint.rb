@@ -58,9 +58,9 @@ module CC
           if include_path =~ %r{/$}
             Dir.glob("#{include_path}/**/*.css")
           else
-            include_path
+            include_path if include_path =~ /\.css$/
           end
-        end.flatten
+        end.flatten.compact
       end
 
       def csslint_xml
