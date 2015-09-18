@@ -38,7 +38,7 @@ module CC
 
         describe "with include_paths" do
           let(:engine_config) {
-            {"include_paths" => %w(included.css included_dir/)}
+            {"include_paths" => %w(included.css included_dir/ config.yml)}
           }
 
           before do
@@ -49,6 +49,7 @@ module CC
             create_source_file(
               "included_dir/sub/sub/subdir/file.css", "img { }"
             )
+            create_source_file("config.yml", "foo:\n  bar: \"baz\"")
             create_source_file("not_included.css", "a { outline: none; }")
           end
 
@@ -71,6 +72,10 @@ module CC
             expect(Dir).not_to receive(:glob).with("**/*.css")
             expect{ lint.run }.to \
               output(/Don't use IDs in selectors./).to_stdout
+          end
+
+          it "only includes CSS files, even when a non-CSS file is directly included" do
+            expect{ lint.run }.not_to output(/config.yml/).to_stdout
           end
         end
       end
