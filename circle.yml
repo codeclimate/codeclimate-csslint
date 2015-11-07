@@ -3,6 +3,9 @@ machine:
     - docker
   environment:
     CLOUDSDK_CORE_DISABLE_PROMPTS: 1
+    CODECLIMATE_DOCKER_REGISTRY_HOSTNAME: registry.codeclimate.net
+    CODECLIMATE_DOCKER_REGISTRY_USERNAME: circleci
+    CODECLIMATE_DOCKER_REGISTRY_EMAIL: ops@codeclimate.com
 
 dependencies:
   override:
@@ -23,4 +26,7 @@ deployment:
       - gcloud auth activate-service-account --key-file /tmp/gcloud_key.json
       - gcloud docker -a
       - docker push $registry_root/$CIRCLE_PROJECT_REPONAME:b$CIRCLE_BUILD_NUM
+      - docker login --username=$CODECLIMATE_DOCKER_REGISTRY_USERNAME --password=$CODECLIMATE_DOCKER_REGISTRY_PASSWORD --email=$CODECLIMATE_DOCKER_REGISTRY_EMAIL $CODECLIMATE_DOCKER_REGISTRY_HOSTNAME
+      - docker tag $registry_root/$CIRCLE_PROJECT_REPONAME:b$CIRCLE_BUILD_NUM $CODECLIMATE_DOCKER_REGISTRY_HOSTNAME/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:b$CIRCLE_BUILD_NUM
+      - docker push $CODECLIMATE_DOCKER_REGISTRY_HOSTNAME/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:b$CIRCLE_BUILD_NUM
 
