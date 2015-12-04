@@ -8,7 +8,7 @@ RUN apk --update add nodejs git ruby ruby-dev ruby-bundler less ruby-nokogiri bu
     bundle install -j 4 && \
     apk del build-base && rm -fr /usr/share/ri
 
-RUN npm install -g codeclimate/csslint.git#7a3a6be
+RUN npm install -g codeclimate/csslint.git#27a21742
 
 RUN adduser -u 9000 -D app
 USER app
