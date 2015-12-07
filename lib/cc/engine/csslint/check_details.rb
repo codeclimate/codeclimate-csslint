@@ -1,45 +1,43 @@
 module CC
   module Engine
     class CSSlint
-      # https://github.com/CSSLint/csslint/wiki/Rules
       class CheckDetails
+        ALL_RULES = {
+          # https://github.com/CSSLint/csslint/wiki/Rules
+          "net.csslint.Adjoiningclasses" => { categories: "Compatability" },
+          "net.csslint.Boxmodel" => { categories: "Bug Risk" },
+          "net.csslint.Boxsizing" => { categories: "Compatability" },
+          "net.csslint.Bulletprooffontface" => { categories: "Compatability" },
+          "net.csslint.Compatiblevendorprefixes" => { categories: "Compatability" },
+          "net.csslint.Displaypropertygrouping" => { categories: "Bug Risk" },
+          "net.csslint.Duplicatebackgroundimages" => { categories: "Bug Risk" },
+          "net.csslint.Duplicateproperties" => { categories: "Bug Risk" },
+          "net.csslint.Emptyrules" => { categories: "Bug Risk" },
+          "net.csslint.Fallbackcolors" => { categories: "Compatability" },
+          "net.csslint.Fontfaces" => { categories: "Bug Risk" },
+          "net.csslint.Gradients" => { categories: "Compatability" },
+          "net.csslint.Import" => { categories: "Bug Risk" },
+          "net.csslint.Knownproperties" => { categories: "Bug Risk" },
+          "net.csslint.Overqualifiedelements" => { categories: "Bug Risk" },
+          "net.csslint.Regexselectors" => { categories: "Bug Risk" },
+          "net.csslint.Shorthand" => { categories: "Bug Risk" },
+          "net.csslint.Starpropertyhack" => { categories: "Compatability" },
+          "net.csslint.Textindent" => { categories: "Compatability" },
+          "net.csslint.Underscorepropertyhack" => { categories: "Compatability" },
+          "net.csslint.Uniqueheadings" => { categories: "Duplication" },
+          "net.csslint.Universalselector" => { categories: "Bug Risk" },
+          "net.csslint.Unqualifiedattributes" => { categories: "Bug Risk" },
+          "net.csslint.Vendorprefix" => { categories: "Compatability" },
+          "net.csslint.Zerounits" => { categories: "Bug Risk" },
+        }.freeze
+
         DEFAULT_CATEGORY = "Style".freeze
         DEFAULT_REMEDIATION_POINTS = 50_000.freeze
 
         attr_reader :categories, :remediation_points
 
-        def self.all
-          @all ||= {
-            "net.csslint.Adjoiningclasses" => new(categories: "Compatability"),
-            "net.csslint.Boxmodel" => new(categories: "Bug Risk"),
-            "net.csslint.Boxsizing" => new(categories: "Compatability"),
-            "net.csslint.Bulletprooffontface" => new(categories: "Compatability"),
-            "net.csslint.Compatiblevendorprefixes" => new(categories: "Compatability"),
-            "net.csslint.Displaypropertygrouping" => new(categories: "Bug Risk"),
-            "net.csslint.Duplicatebackgroundimages" => new(categories: "Bug Risk"),
-            "net.csslint.Duplicateproperties" => new(categories: "Bug Risk"),
-            "net.csslint.Emptyrules" => new(categories: "Bug Risk"),
-            "net.csslint.Fallbackcolors" => new(categories: "Compatability"),
-            "net.csslint.Fontfaces" => new(categories: "Bug Risk"),
-            "net.csslint.Gradients" => new(categories: "Compatability"),
-            "net.csslint.Import" => new(categories: "Bug Risk"),
-            "net.csslint.Knownproperties" => new(categories: "Bug Risk"),
-            "net.csslint.Overqualifiedelements" => new(categories: "Bug Risk"),
-            "net.csslint.Regexselectors" => new(categories: "Bug Risk"),
-            "net.csslint.Shorthand" => new(categories: "Bug Risk"),
-            "net.csslint.Starpropertyhack" => new(categories: "Compatability"),
-            "net.csslint.Textindent" => new(categories: "Compatability"),
-            "net.csslint.Underscorepropertyhack" => new(categories: "Compatability"),
-            "net.csslint.Uniqueheadings" => new(categories: "Duplication"),
-            "net.csslint.Universalselector" => new(categories: "Bug Risk"),
-            "net.csslint.Unqualifiedattributes" => new(categories: "Bug Risk"),
-            "net.csslint.Vendorprefix" => new(categories: "Compatability"),
-            "net.csslint.Zerounits" => new(categories: "Bug Risk"),
-          }
-        end
-
         def self.fetch(check_name)
-          all.fetch(check_name) { new }
+          new(ALL_RULES.fetch(check_name, {}))
         end
 
         def initialize(
