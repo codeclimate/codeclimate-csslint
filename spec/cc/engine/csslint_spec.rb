@@ -22,6 +22,12 @@ module CC
           expect{ lint.run }.to_not output.to_stdout
         end
 
+        it "only reports issues in the file where they're present" do
+          create_source_file('bad.css', id_selector_content)
+          create_source_file('good.css', '.foo { margin: 0 }')
+          expect{ lint.run }.not_to output(/good\.css/).to_stdout
+        end
+
         describe "with exclude_paths" do
           let(:engine_config) { {"exclude_paths" => %w(excluded.css)} }
 

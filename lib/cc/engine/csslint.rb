@@ -14,23 +14,27 @@ module CC
         Dir.chdir(@directory) do
           results.xpath('//file').each do |file|
             path = file['name'].sub(/\A#{@directory}\//, '')
-            file.xpath('//error').each do |lint|
+            file.children.each do |node|
+              next unless node.name == "error"
+
+              lint = node.attributes
+
               issue = {
                 type: "issue",
-                check_name: lint["source"],
-                description: lint["message"],
+                check_name: lint["source"].value,
+                description: lint["message"].value,
                 categories: ["Style"],
                 remediation_points: 500,
                 location: {
                   path: path,
                   positions: {
                     begin: {
-                      line: lint["line"].to_i,
-                      column: lint["column"].to_i
+                      line: lint["line"].value.to_i,
+                      column: lint["column"].value.to_i
                     },
                     end: {
-                      line: lint["line"].to_i,
-                      column: lint["column"].to_i
+                      line: lint["line"].value.to_i,
+                      column: lint["column"].value.to_i
                     }
                   }
                 }
