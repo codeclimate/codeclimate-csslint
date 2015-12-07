@@ -4,6 +4,8 @@ require 'json'
 module CC
   module Engine
     class CSSlint
+      autoload :CheckDetails, "cc/engine/csslint/check_details"
+
       def initialize(directory: , io: , engine_config: )
         @directory = directory
         @engine_config = engine_config
@@ -18,13 +20,15 @@ module CC
               next unless node.name == "error"
 
               lint = node.attributes
+              check_name = lint["source"].value
+              check_details = CheckDetails.fetch(check_name)
 
               issue = {
                 type: "issue",
-                check_name: lint["source"].value,
+                check_name: check_name,
                 description: lint["message"].value,
-                categories: ["Style"],
-                remediation_points: 500,
+                categories: check_details.categories,
+                remediation_points: check_details.remediation_points,
                 location: {
                   path: path,
                   positions: {

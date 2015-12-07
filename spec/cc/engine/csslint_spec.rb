@@ -1,5 +1,4 @@
-require 'cc/engine/csslint'
-require 'tmpdir'
+require "spec_helper"
 
 module CC
   module Engine
