@@ -4,7 +4,7 @@ class CC::Engine::CSSlint
   describe CheckDetails do
     describe ".fetch" do
       it "returns details for customized checks" do
-        details = CheckDetails.fetch("net.csslint.Disallow@import")
+        details = CheckDetails.fetch("import")
 
         expect(details.categories).to eq ["Bug Risk"]
         expect(details.remediation_points).to eq 50_000
