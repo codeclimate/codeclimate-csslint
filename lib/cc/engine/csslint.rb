@@ -20,7 +20,7 @@ module CC
               next unless node.name == "error"
 
               lint = node.attributes
-              check_name = lint["source"].value
+              check_name = lint["identifier"].value
               check_details = CheckDetails.fetch(check_name)
 
               issue = {
