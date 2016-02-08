@@ -16,6 +16,11 @@ module CC
           expect{ lint.run }.to output(/Don't use IDs in selectors./).to_stdout
         end
 
+        it 'fails on malformed file' do
+          create_source_file('foo.css', '�6�')
+          expect{ lint.run }.to raise_error(MissingAttributesError)
+        end
+
         it "doesn't analyze *.scss files" do
           create_source_file('foo.scss', id_selector_content)
           expect{ lint.run }.to_not output.to_stdout
