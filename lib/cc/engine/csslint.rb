@@ -19,32 +19,36 @@ module CC
             file.children.each do |node|
               next unless node.name == "error"
 
-              lint = node.attributes
-              check_name = lint["identifier"].value
-              check_details = CheckDetails.fetch(check_name)
+              begin
+                lint = node.attributes
+                check_name = lint["identifier"].value
+                check_details = CheckDetails.fetch(check_name)
 
-              issue = {
-                type: "issue",
-                check_name: check_name,
-                description: lint["message"].value,
-                categories: check_details.categories,
-                remediation_points: check_details.remediation_points,
-                location: {
-                  path: path,
-                  positions: {
-                    begin: {
-                      line: lint["line"].value.to_i,
-                      column: lint["column"].value.to_i
-                    },
-                    end: {
-                      line: lint["line"].value.to_i,
-                      column: lint["column"].value.to_i
+                issue = {
+                  type: "issue",
+                  check_name: check_name,
+                  description: lint["message"].value,
+                  categories: check_details.categories,
+                  remediation_points: check_details.remediation_points,
+                  location: {
+                    path: path,
+                    positions: {
+                      begin: {
+                        line: lint["line"].value.to_i,
+                        column: lint["column"].value.to_i
+                      },
+                      end: {
+                        line: lint["line"].value.to_i,
+                        column: lint["column"].value.to_i
+                      }
                     }
                   }
                 }
-              }
 
-              puts("#{issue.to_json}\0")
+                puts("#{issue.to_json}\0")
+              rescue
+                STDERR.puts("CodeClimate unsupported csslint issue: #{node}")
+              end
             end
           end
         end
