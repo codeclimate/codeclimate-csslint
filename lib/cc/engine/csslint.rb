@@ -28,32 +28,30 @@ module CC
       private
 
       def create_issue(node, path)
-        begin
-          check_name = node.attributes.fetch("identifier").value
-          check_details = CheckDetails.fetch(check_name)
-          return {
-            type: "issue",
-            check_name: check_name,
-            description: node.attributes.fetch("message").value,
-            categories: check_details.categories,
-            remediation_points: check_details.remediation_points,
-            location: {
-              path: path,
-              positions: {
-                begin: {
-                  line: node.attributes.fetch("line").value.to_i,
-                  column: node.attributes.fetch("column").value.to_i
-                },
-                end: {
-                  line: node.attributes.fetch("line").value.to_i,
-                  column: node.attributes.fetch("column").value.to_i
-                }
+        check_name = node.attributes.fetch("identifier").value
+        check_details = CheckDetails.fetch(check_name)
+        return {
+          type: "issue",
+          check_name: check_name,
+          description: node.attributes.fetch("message").value,
+          categories: check_details.categories,
+          remediation_points: check_details.remediation_points,
+          location: {
+            path: path,
+            positions: {
+              begin: {
+                line: node.attributes.fetch("line").value.to_i,
+                column: node.attributes.fetch("column").value.to_i
+              },
+              end: {
+                line: node.attributes.fetch("line").value.to_i,
+                column: node.attributes.fetch("column").value.to_i
               }
             }
           }
-        rescue KeyError => e
-          raise MissingAttributesError, "#{e.message} on XML '#{node}' when analyzing file '#{path}'"
-        end
+        }
+      rescue KeyError => e
+        raise MissingAttributesError, "#{e.message} on XML '#{node}' when analyzing file '#{path}'"
       end
 
       def results
