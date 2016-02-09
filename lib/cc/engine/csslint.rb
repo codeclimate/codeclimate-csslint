@@ -18,43 +18,43 @@ module CC
             path = file['name'].sub(/\A#{@directory}\//, '')
             file.children.each do |node|
               next unless node.name == "error"
-
-              begin
-                lint = node.attributes
-                check_name = lint["identifier"].value
-                check_details = CheckDetails.fetch(check_name)
-
-                issue = {
-                  type: "issue",
-                  check_name: check_name,
-                  description: lint["message"].value,
-                  categories: check_details.categories,
-                  remediation_points: check_details.remediation_points,
-                  location: {
-                    path: path,
-                    positions: {
-                      begin: {
-                        line: lint["line"].value.to_i,
-                        column: lint["column"].value.to_i
-                      },
-                      end: {
-                        line: lint["line"].value.to_i,
-                        column: lint["column"].value.to_i
-                      }
-                    }
-                  }
-                }
-
-                puts("#{issue.to_json}\0")
-              rescue
-                STDERR.puts("CodeClimate unsupported csslint issue: #{node}")
-              end
+              issue = create_issue(node, path)
+              puts("#{issue.to_json}\0")
             end
           end
         end
       end
 
       private
+
+      def create_issue(node, path)
+        begin
+          check_name = node.attributes.fetch("identifier").value
+          check_details = CheckDetails.fetch(check_name)
+          return {
+            type: "issue",
+            check_name: check_name,
+            description: node.attributes.fetch("message").value,
+            categories: check_details.categories,
+            remediation_points: check_details.remediation_points,
+            location: {
+              path: path,
+              positions: {
+                begin: {
+                  line: node.attributes.fetch("line").value.to_i,
+                  column: node.attributes.fetch("column").value.to_i
+                },
+                end: {
+                  line: node.attributes.fetch("line").value.to_i,
+                  column: node.attributes.fetch("column").value.to_i
+                }
+              }
+            }
+          }
+        rescue KeyError => e
+          raise MissingAttributesError, "#{e.message} on XML '#{node}' when analyzing file '#{path}'"
+        end
+      end
 
       def results
         @results ||= Nokogiri::XML(csslint_xml)
@@ -86,6 +86,8 @@ module CC
           build_files_with_exclusions(@engine_config["exclude_paths"] || [])
         end
       end
+    end
+    class MissingAttributesError < StandardError
     end
   end
 end
