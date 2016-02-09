@@ -31,7 +31,7 @@ module CC
       def create_issue(node, path)
         check_name = node.attributes.fetch("identifier").value
         check_details = CheckDetails.fetch(check_name)
-        
+
         {
           type: "issue",
           check_name: check_name,
