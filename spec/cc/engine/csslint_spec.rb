@@ -17,7 +17,7 @@ module CC
         end
 
         it 'fails on malformed file' do
-          create_source_file('foo.css', '')
+          create_source_file('foo.css', '�6�')
           expect{ lint.run }.to raise_error(MissingAttributesError)
         end
 
