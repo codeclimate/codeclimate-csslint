@@ -3,6 +3,7 @@ require 'json'
 
 module CC
   module Engine
+    MissingAttributesError = Class.new(StandardError)
     class CSSlint
       autoload :CheckDetails, "cc/engine/csslint/check_details"
 
@@ -85,8 +86,6 @@ module CC
           build_files_with_exclusions(@engine_config["exclude_paths"] || [])
         end
       end
-    end
-    class MissingAttributesError < StandardError
     end
   end
 end
