@@ -61,30 +61,18 @@ module CC
         @results ||= Nokogiri::XML(csslint_xml)
       end
 
-      def build_files_with_exclusions(exclusions)
-        files = Dir.glob("**/*.css")
-        files.reject { |f| exclusions.include?(f) }
-      end
-
-      def build_files_with_inclusions(inclusions)
-        inclusions.map do |include_path|
-          if include_path =~ %r{/$}
-            Dir.glob("#{include_path}/**/*.css")
-          else
-            include_path if include_path =~ /\.css$/
-          end
-        end.flatten.compact
-      end
-
       def csslint_xml
         `csslint --format=checkstyle-xml #{files_to_inspect.join(" ")}`
       end
 
       def files_to_inspect
-        if @engine_config["include_paths"]
-          build_files_with_inclusions(@engine_config["include_paths"])
-        else
-          build_files_with_exclusions(@engine_config["exclude_paths"] || [])
+        include_paths = @engine_config["include_paths"] || ["./"]
+        include_paths.each_with_object([]) do |path, out|
+          if path.end_with?("/")
+            out.concat(Dir.glob("#{path}**/*.css"))
+          elsif path.end_with?(".css")
+            out << path
+          end
         end
       end
     end

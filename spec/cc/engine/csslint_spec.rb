@@ -32,20 +32,6 @@ module CC
           expect{ lint.run }.not_to output(/good\.css/).to_stdout
         end
 
-        describe "with exclude_paths" do
-          let(:engine_config) { {"exclude_paths" => %w(excluded.css)} }
-
-          before do
-            create_source_file("not_excluded.css", "p { margin: 5px }")
-            create_source_file("excluded.css", id_selector_content)
-          end
-
-          it "excludes all matching paths" do
-            expect{ lint.run }.not_to \
-              output(/Don't use IDs in selectors./).to_stdout
-          end
-        end
-
         describe "with include_paths" do
           let(:engine_config) {
             {"include_paths" => %w(included.css included_dir/ config.yml)}
@@ -79,6 +65,7 @@ module CC
           end
 
           it "shouldn't call a top-level Dir.glob ever" do
+            allow(Dir).to receive(:glob).and_call_original
             expect(Dir).not_to receive(:glob).with("**/*.css")
             expect{ lint.run }.to \
               output(/Don't use IDs in selectors./).to_stdout
