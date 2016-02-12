@@ -62,7 +62,7 @@ module CC
       end
 
       def csslint_xml
-        `csslint --format=checkstyle-xml #{files_to_inspect.join(" ")}`
+        `csslint --format=checkstyle-xml #{files_to_inspect.shelljoin}`
       end
 
       def files_to_inspect
