@@ -1,5 +1,6 @@
-require 'nokogiri'
-require 'json'
+require "json"
+require "nokogiri"
+require "shellwords"
 
 module CC
   module Engine
