@@ -1,8 +1,17 @@
 machine:
   services:
     - docker
-  environment:
-    CLOUDSDK_CORE_DISABLE_PROMPTS: 1
+
+dependencies:
+  override:
+    - >
+      docker run
+      --env CIRCLE_BRANCH
+      --env CIRCLE_PROJECT_REPONAME
+      --env CIRCLE_TOKEN
+      --env GCR_JSON_KEY
+      --volume /var/run/docker.sock:/var/run/docker.sock
+      codeclimate/patrick pull || true
 
 test:
   override:
@@ -12,10 +21,14 @@ deployment:
   registry:
     branch: master
     commands:
-      - echo $gcloud_json_key_base64 | sed 's/ //g' | base64 -d > /tmp/gcloud_key.json
-      - docker tag codeclimate/codeclimate-csslint $registry_root/$CIRCLE_PROJECT_REPONAME:b$CIRCLE_BUILD_NUM
-      - gcloud auth activate-service-account --key-file /tmp/gcloud_key.json
-      - gcloud docker push $registry_root/$CIRCLE_PROJECT_REPONAME:b$CIRCLE_BUILD_NUM
+      - >
+        docker run
+        --env CIRCLE_BUILD_NUM
+        --env CIRCLE_PROJECT_REPONAME
+        --env GCR_JSON_KEY
+        --volume /var/run/docker.sock:/var/run/docker.sock
+        codeclimate/patrick push gcr
+
 notify:
   webhooks:
     - url: https://cc-slack-proxy.herokuapp.com/circle
