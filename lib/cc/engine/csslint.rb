@@ -1,10 +1,13 @@
 require "json"
 require "nokogiri"
+require "ostruct"
 require "shellwords"
 
 module CC
   module Engine
     MissingAttributesError = Class.new(StandardError)
+
+    DEFAULT_IDENTIFIER = OpenStruct.new(value: "parse-error")
 
     class CSSlint
       autoload :CheckDetails, "cc/engine/csslint/check_details"
@@ -21,12 +24,7 @@ module CC
             path = file['name'].sub(/\A#{@directory}\//, '')
             file.children.each do |node|
               next unless node.name == "error"
-              issue =
-                if node.attributes.key?("identifier")
-                  create_issue(node, path)
-                else
-                  create_error(node, path)
-                end
+              issue = create_issue(node, path)
               puts("#{issue.to_json}\0")
             end
           end
@@ -37,7 +35,7 @@ module CC
 
       # rubocop:disable Metrics/MethodLength
       def create_issue(node, path)
-        check_name = node.attributes.fetch("identifier").value
+        check_name = node.attributes.fetch("identifier", DEFAULT_IDENTIFIER).value
         check_details = CheckDetails.fetch(check_name)
 
         {
@@ -62,33 +60,6 @@ module CC
         }
       rescue KeyError => ex
         raise MissingAttributesError, "#{ex.message} on XML '#{node}' when analyzing file '#{path}'"
-      end
-      # rubocop:enable Metrics/MethodLength
-
-      # rubocop:disable Metrics/MethodLength
-      def create_error(node, path)
-        {
-          type: "issue",
-          check_name: "parse-error",
-          description: node.attributes.fetch("message").value,
-          categories: ["Bug Risk"],
-          remediation_points: 5_000,
-          location: {
-            path: path,
-            positions: {
-              begin: {
-                line: node.attributes.fetch("line").value.to_i,
-                column: node.attributes.fetch("column").value.to_i
-              },
-              end: {
-                line: node.attributes.fetch("line").value.to_i,
-                column: node.attributes.fetch("column").value.to_i
-              }
-            }
-          }
-        }
-      rescue KeyError => ex
-        raise MissingAttributesError, "#{ex.message} on XML error '#{node}' when analyzing file '#{path}'"
       end
       # rubocop:enable Metrics/MethodLength
 

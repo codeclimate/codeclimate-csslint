@@ -19,6 +19,7 @@ module CC
           "import" => { categories: "Bug Risk" },
           "known-properties" => { categories: "Bug Risk" },
           "overqualified-elements" => { categories: "Bug Risk" },
+	  "parse-error" => { categories: "Bug Risk" },
           "regex-selectors" => { categories: "Bug Risk" },
           "shorthand" => { categories: "Bug Risk" },
           "star-property-hack" => { categories: "Compatibility" },
