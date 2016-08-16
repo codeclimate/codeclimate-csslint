@@ -22,7 +22,7 @@ module CC
             file.children.each do |node|
               next unless node.name == "error"
               issue =
-                if node.attributes.has_key?("identifier")
+                if node.attributes.key?("identifier")
                   create_issue(node, path)
                 else
                   create_error(node, path)
@@ -35,6 +35,7 @@ module CC
 
       private
 
+      # rubocop:disable Metrics/MethodLength
       def create_issue(node, path)
         check_name = node.attributes.fetch("identifier").value
         check_details = CheckDetails.fetch(check_name)
@@ -62,11 +63,13 @@ module CC
       rescue KeyError => ex
         raise MissingAttributesError, "#{ex.message} on XML '#{node}' when analyzing file '#{path}'"
       end
+      # rubocop:enable Metrics/MethodLength
 
+      # rubocop:disable Metrics/MethodLength
       def create_error(node, path)
         {
           type: "issue",
-          check_name: "parse_error",
+          check_name: "parse-error",
           description: node.attributes.fetch("message").value,
           categories: ["Bug Risk"],
           remediation_points: 5_000,
@@ -87,6 +90,7 @@ module CC
       rescue KeyError => ex
         raise MissingAttributesError, "#{ex.message} on XML error '#{node}' when analyzing file '#{path}'"
       end
+      # rubocop:enable Metrics/MethodLength
 
       def results
         @results ||= Nokogiri::XML(csslint_xml)
