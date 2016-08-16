@@ -21,7 +21,12 @@ module CC
             path = file['name'].sub(/\A#{@directory}\//, '')
             file.children.each do |node|
               next unless node.name == "error"
-              issue = create_issue(node, path)
+              issue =
+                if node.attributes.has_key?("identifier")
+                  create_issue(node, path)
+                else
+                  create_error(node, path)
+                end
               puts("#{issue.to_json}\0")
             end
           end
@@ -56,6 +61,31 @@ module CC
         }
       rescue KeyError => ex
         raise MissingAttributesError, "#{ex.message} on XML '#{node}' when analyzing file '#{path}'"
+      end
+
+      def create_error(node, path)
+        {
+          type: "issue",
+          check_name: "parse_error",
+          description: node.attributes.fetch("message").value,
+          categories: ["Bug Risk"],
+          remediation_points: 5_000,
+          location: {
+            path: path,
+            positions: {
+              begin: {
+                line: node.attributes.fetch("line").value.to_i,
+                column: node.attributes.fetch("column").value.to_i
+              },
+              end: {
+                line: node.attributes.fetch("line").value.to_i,
+                column: node.attributes.fetch("column").value.to_i
+              }
+            }
+          }
+        }
+      rescue KeyError => ex
+        raise MissingAttributesError, "#{ex.message} on XML error '#{node}' when analyzing file '#{path}'"
       end
 
       def results
