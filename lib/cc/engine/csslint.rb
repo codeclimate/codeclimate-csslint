@@ -1,10 +1,13 @@
 require "json"
 require "nokogiri"
+require "ostruct"
 require "shellwords"
 
 module CC
   module Engine
     MissingAttributesError = Class.new(StandardError)
+
+    DEFAULT_IDENTIFIER = OpenStruct.new(value: "parse-error")
 
     class CSSlint
       autoload :CheckDetails, "cc/engine/csslint/check_details"
@@ -30,8 +33,9 @@ module CC
 
       private
 
+      # rubocop:disable Metrics/MethodLength
       def create_issue(node, path)
-        check_name = node.attributes.fetch("identifier").value
+        check_name = node.attributes.fetch("identifier", DEFAULT_IDENTIFIER).value
         check_details = CheckDetails.fetch(check_name)
 
         {
@@ -57,6 +61,7 @@ module CC
       rescue KeyError => ex
         raise MissingAttributesError, "#{ex.message} on XML '#{node}' when analyzing file '#{path}'"
       end
+      # rubocop:enable Metrics/MethodLength
 
       def results
         @results ||= Nokogiri::XML(csslint_xml)

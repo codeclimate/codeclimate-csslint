@@ -18,7 +18,7 @@ module CC
 
         it 'fails on malformed file' do
           create_source_file('foo.css', '�6�')
-          expect{ lint.run }.to raise_error(MissingAttributesError)
+          expect{ lint.run }.to output(/Unexpected token/).to_stdout
         end
 
         it "doesn't analyze *.scss files" do
