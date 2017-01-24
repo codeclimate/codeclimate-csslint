@@ -10,6 +10,8 @@ module CC
     DEFAULT_IDENTIFIER = OpenStruct.new(value: "parse-error")
 
     class CSSlint
+      DEFAULT_EXTENSIONS = [".css"].freeze
+
       autoload :CheckDetails, "cc/engine/csslint/check_details"
 
       def initialize(directory: , io: , engine_config: )
@@ -32,6 +34,8 @@ module CC
       end
 
       private
+
+      attr_reader :engine_config
 
       # rubocop:disable Metrics/MethodLength
       def create_issue(node, path)
@@ -72,14 +76,16 @@ module CC
       end
 
       def files_to_inspect
-        include_paths = @engine_config["include_paths"] || ["./"]
-        include_paths.each_with_object([]) do |path, out|
+        include_paths = engine_config.fetch("include_paths", ["./"])
+        extensions = engine_config.fetch("extensions", DEFAULT_EXTENSIONS)
+        extensions_glob = extensions.join(",")
+        include_paths.flat_map do |path|
           if path.end_with?("/")
-            out.concat(Dir.glob("#{path}**/*.css"))
-          elsif path.end_with?(".css")
-            out << path
+            Dir.glob("#{File.expand_path path}/**/*{#{extensions_glob}}")
+          elsif path.end_with?(*extensions)
+            path
           end
-        end
+        end.compact
       end
     end
   end

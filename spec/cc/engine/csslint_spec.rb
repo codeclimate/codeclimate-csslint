@@ -75,6 +75,23 @@ module CC
             expect{ lint.run }.not_to output(/config.yml/).to_stdout
           end
         end
+
+        describe "with custom extensions" do
+          let(:engine_config) do
+            {
+              "extensions" => %w(.fancycss)
+            }
+          end
+
+          before do
+            create_source_file("master.fancycss", id_selector_content)
+          end
+
+          it "takes into account extensions" do
+            expect{ lint.run }.to \
+              output(/Don't use IDs in selectors./).to_stdout
+          end
+        end
       end
 
       def create_source_file(path, content)
