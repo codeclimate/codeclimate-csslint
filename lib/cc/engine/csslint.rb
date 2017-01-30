@@ -77,7 +77,7 @@ module CC
 
       def files_to_inspect
         include_paths = engine_config.fetch("include_paths", ["./"])
-        extensions = engine_config.fetch("extensions", DEFAULT_EXTENSIONS)
+        extensions = engine_config.fetch("config", {}).fetch("extensions", DEFAULT_EXTENSIONS)
         extensions_glob = extensions.join(",")
         include_paths.flat_map do |path|
           if path.end_with?("/")
