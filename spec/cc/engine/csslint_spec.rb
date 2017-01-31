@@ -79,7 +79,9 @@ module CC
         describe "with custom extensions" do
           let(:engine_config) do
             {
-              "extensions" => %w(.fancycss)
+              "config" => {
+                "extensions" => %w(.fancycss)
+              }
             }
           end
 
