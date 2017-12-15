@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), "../lib")))
+
+require 'cc/engine/csslint'
+
+if File.exists?("/config.json")
+  engine_config = JSON.parse(File.read("/config.json"))
+else
+  engine_config = {}
+end
+
+CC::Engine::CSSlint.new(
+  directory: "/code", engine_config: engine_config, io: STDOUT
+).run
