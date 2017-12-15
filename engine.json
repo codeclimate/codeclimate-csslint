@@ -1,0 +1,13 @@
+{
+  "name": "CSSLint",
+  "description": "CSSLint is a tool to help point out problems with your CSS code.",
+  "maintainer": {
+    "name": "Code Climate",
+    "email": "hello@codeclimate.com"
+  },
+  "languages": [
+    "CSS"
+  ],
+  "version": "2.0.0",
+  "spec_version": "0.3.1"
+}

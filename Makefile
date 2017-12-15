@@ -4,4 +4,4 @@ image:
 	docker build -t codeclimate/codeclimate-csslint .
 
 test: image
-	docker run --rm codeclimate/codeclimate-csslint npm run test
+	docker run --rm codeclimate/codeclimate-csslint sh -c "cd /usr/src/app && npm run test"
