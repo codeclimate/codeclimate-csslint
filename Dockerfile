@@ -1,19 +1,26 @@
-FROM codeclimate/alpine-ruby:b38
-
-WORKDIR /usr/src/app
-COPY Gemfile /usr/src/app/
-COPY Gemfile.lock /usr/src/app/
-
-RUN apk --update add nodejs git zlib zlib-dev ruby ruby-dev ruby-bundler less build-base && \
-    bundle install -j 4 && \
-    apk del --purge build-base zlib zlib-dev && rm -fr /usr/share/ri
-
-ENV CSSLINT_SHA=87aa604a4cbc5125db979576f1b09b35980fcf08
-RUN npm install -g codeclimate/csslint.git#$CSSLINT_SHA
+FROM node:alpine
+LABEL maintainer="Code Climate <hello@codeclimate.com>"
 
 RUN adduser -u 9000 -D app
-USER app
+
+WORKDIR /usr/src/app
+
+COPY package.json yarn.lock engine.json ./
+
+RUN yarn install && \
+  chown -R app:app ./ && \
+  apk add --no-cache --virtual .dev-deps jq && \
+  export csslint_version=$(yarn --json list --pattern csslint 2>/dev/null | jq -r '.data.trees[0].name' | cut -d@ -f2) && \
+  cat engine.json | jq '.version = .version + "/" + env.csslint_version' > /engine.json && \
+  apk del .dev-deps
+
+COPY . ./
 
 COPY . /usr/src/app
+
+USER app
+
+VOLUME /code
+WORKDIR /code
 
 CMD ["/usr/src/app/bin/csslint"]

@@ -1,8 +1,7 @@
 engines:
-  rubocop:
+  eslint:
     enabled: true
-ratings:
-  paths:
-  - "**.rb"
+    channel: eslint-4
 exclude_paths:
-  - spec/**/*
+  - test/**/*
+  - node_modules/**/*

@@ -1,14 +1,10 @@
-#!/usr/bin/env ruby
-$LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), "../lib")))
+#!/usr/local/bin/node --expose-gc
 
-require 'cc/engine/csslint'
+const fs = require("fs");
+const Engine = require("../lib/csslint");
 
-if File.exists?("/config.json")
-  engine_config = JSON.parse(File.read("/config.json"))
-else
-  engine_config = {}
-end
+const CONFIG_PATH = "/config.json";
+let config = JSON.parse(fs.readFileSync(CONFIG_PATH));
 
-CC::Engine::CSSlint.new(
-  directory: "/code", engine_config: engine_config, io: STDOUT
-).run
+const CODE_DIR = "/code";
+new Engine(CODE_DIR, console, config).run();
