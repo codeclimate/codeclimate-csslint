@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem 'json'
-gem 'nokogiri'
+gem 'nokogiri', '~> 1.8.5'
 gem "pry"
 
 group :test do
